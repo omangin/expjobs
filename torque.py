@@ -139,5 +139,10 @@ class TorqueJob(BaseJob):
 class TorquePool(Pool):
     """Launch each job as a standalone Torque job."""
 
+    def __init__(self, default_walltime=1.):
+        super(TorquePool, self).__init__()
+        self._walltime = default_walltime
+
     def append(self, job):
-        super(TorquePool, self).append(TorqueJob.from_job(job))
+        super(TorquePool, self).append(
+                TorqueJob.from_job(job, walltime=self._walltime))

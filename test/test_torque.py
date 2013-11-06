@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from joblib.job import Job
-from joblib.torque import TorquePool
+from joblib.torque import TorquePool, TorqueJob
 
 
 SCRIPT = '/bin/false'
@@ -20,13 +20,23 @@ exit $EXIT_CODE
 """
 
 
-class TestMultiprocessPool(TestCase):
+class TestTorquePool(TestCase):
 
     def setUp(self):
         self.jobs = [Job('/dev/null', 'test' + str(i), SCRIPT)
                      for i in range(10)]
         self.pool = TorquePool()
         self.pool.extend(self.jobs)
+
+    def test_job_inherits_walltime(self):
+        pool = TorquePool(default_walltime=3.)
+        pool.append(Job('/dev/null', 'test1', SCRIPT))
+        self.assertEqual(pool.jobs[0].walltime, 3.)
+
+    def test_torquejob_do_not_inherits_walltime(self):
+        pool = TorquePool(default_walltime=3.)
+        pool.append(TorqueJob('/dev/null', 'test2', SCRIPT, walltime=2.))
+        self.assertEqual(pool.jobs[0].walltime, 2.)
 
     def test_job_PBS(self):
         PBS = self.pool.jobs[0].get_PBS()

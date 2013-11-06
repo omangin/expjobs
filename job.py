@@ -39,10 +39,10 @@ class BaseJob(object):
         return os.path.join(self.path, self.name + '.' + ext)
 
     @classmethod
-    def from_job(cls, job):  # Basic conversion
+    def from_job(cls, job, *args, **kwargs):  # Basic conversion
         if isinstance(job, cls):
             return job
-        return cls(job.path, job.name, job.script)
+        return cls(job.path, job.name, job.script, *args, **kwargs)
 
 
 class Job(BaseJob):
