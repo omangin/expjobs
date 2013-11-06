@@ -12,8 +12,11 @@ OK_PBS = """\
 #PBS -N test0
 #PBS -l walltime=1:00:00
 
-python /bin/false /dev/null/test0.cfg /dev/null test0 1>/dev/null/test0.err \
-2>/dev/null/test0.out\
+(python /bin/false /dev/null/test0.cfg /dev/null test0 1>/dev/null/test0.out \
+2>/dev/null/test0.err)
+EXIT_CODE=$?
+echo $EXIT_CODE > /dev/null/test0.$(echo $PBS_JOBID | cut -d"." -f1).exitcode
+exit $EXIT_CODE
 """
 
 

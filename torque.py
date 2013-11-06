@@ -62,6 +62,15 @@ class TorqueJob(BaseJob):
         except IOError:
             self._job_id = (False, None)  # Means qsub has not been called
 
+    def get_exit_code_file(self, job_id=None):
+        if job_id is None:
+            job_id = self.job_id
+        return self._file("{}.exitcode".format(job_id))
+
+    def get_exit_code(self):
+        with open(self.get_exit_code_file(), 'r+') as f:
+            return int(f.read())
+
     def get_walltime_str(self):
         # Only works for less than one day
         return str(datetime.timedelta(hours=self.walltime))
@@ -73,16 +82,20 @@ class TorqueJob(BaseJob):
     def get_PBS(self):
         # Code to launch experiment
         code = self._format_preamble()
-        code += "{} {} {} {} {} 1>{} 2>{}".format(self.PYTHON, self.script,
-                                                  self.config, self.path,
-                                                  self.name, self.out,
-                                                  self.err)
+        code += "({} {} {} {} {} 1>{} 2>{})\n".format(self.PYTHON, self.script,
+                                                    self.config, self.path,
+                                                    self.name, self.out,
+                                                    self.err)
+        code += "EXIT_CODE=$?\n"
+        code += "echo $EXIT_CODE > {}\n".format(self.get_exit_code_file(
+            '$(echo $PBS_JOBID | cut -d"." -f1)'))
+        code += "exit $EXIT_CODE\n"
         return code
 
     def write_PBS(self):
         # Write script
         script_file = self.pbs
-        with open(script_file, 'w') as f:
+        with open(script_file, 'w+') as f:
             f.write(self.get_PBS())
         # Add execution rights
         os.chmod(script_file, os.stat(script_file).st_mode | stat.S_IEXEC)
@@ -94,7 +107,7 @@ class TorqueJob(BaseJob):
             out = subprocess.check_output(['qsub', self.pbs])
             self.job_id = int(out.split('.')[0])
             with open(self.id_file, 'w+') as id_file:
-                id_file.write(out.split('.')[0])
+                id_file.write(out.split('.')[0] + '\n')
         except subprocess.CalledProcessError, e:
             self.set_qsub_error(e.returncode)
         except ValueError:  # from int cast
@@ -110,17 +123,21 @@ class TorqueJob(BaseJob):
             try:
                 return qstat.get_status(self.job_id)
             except qstat.UnknownJob:
-                # TODO implement a way to get actual status (dump exit status)
-                return status.DONE
+                try:
+                    code = self.get_exit_code()
+                    if code == 0:
+                        return status.DONE
+                except:
+                    pass
+                return status.FAILED
+        elif self._job_id[1] is None:
+            return status.READY
         else:
             return status.FAILED
 
 
 class TorquePool(Pool):
     """Launch each job as a standalone Torque job."""
-
-    def run(self):
-        pass
 
     def append(self, job):
         super(TorquePool, self).append(TorqueJob.from_job(job))
