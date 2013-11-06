@@ -9,7 +9,6 @@ def run_class(runnable_class):
         print 'script path_to_config path_to_results name'
         sys.exit(1)
     cfg, path, name = tuple(sys.argv[1:4])
-    worker = runnable_class()
-    worker.load_from_serialized(cfg)
+    worker = runnable_class.load_from_serialized(cfg)
     worker.set_out_path_and_name(path, name)
     worker.run()

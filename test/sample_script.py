@@ -11,10 +11,6 @@ class DummyWorker(object):
 
     param = 2
 
-    def load_from_serialized(self, cfg):
-        with open(cfg, 'r+') as f:
-            self.param = int(f.read())
-
     def set_out_path_and_name(self, path, name):
         self.out_path = path
         self.out_name = name
@@ -25,6 +21,13 @@ class DummyWorker(object):
         out_file = os.path.join(self.out_path, self.out_name + '.result')
         with open(out_file, 'w+') as f:
             f.write('Done.')
+
+    @classmethod
+    def load_from_serialized(cls, cfg):
+        worker = cls()
+        with open(cfg, 'r+') as f:
+            cls.param = int(f.read())
+        return worker
 
 
 run_class(DummyWorker)
