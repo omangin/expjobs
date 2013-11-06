@@ -40,6 +40,8 @@ class BaseJob(object):
 
     @classmethod
     def from_job(cls, job):  # Basic conversion
+        if isinstance(job, cls):
+            return job
         return cls(job.path, job.name, job.script)
 
 
