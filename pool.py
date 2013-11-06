@@ -25,3 +25,8 @@ class Pool(object):
     @property
     def statuses(self):
         return [j.status for j in self.jobs]
+
+    @property
+    def status_counts(self):
+        statuses = self.statuses
+        return [(s, statuses.count(s)) for s in set(statuses)]
