@@ -13,6 +13,12 @@ from .job import BaseJob
 from .pool import Pool
 
 
+def has_qsub():
+    with open(os.devnull) as devnull:
+        return subprocess.call(['which', 'qsub'], stdout=devnull,
+                               stderr=devnull) == 0
+
+
 class TorqueJob(BaseJob):
 
     PREAMBLE = '#!/bin/sh\n\n'\
