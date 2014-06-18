@@ -4,7 +4,6 @@
 
 import os
 import stat
-import datetime
 import subprocess
 
 from . import status
@@ -78,8 +77,12 @@ class TorqueJob(BaseJob):
             return int(f.read())
 
     def get_walltime_str(self):
-        # Only works for less than one day
-        return str(datetime.timedelta(hours=self.walltime))
+        time = self.walltime
+        hours = int(time)
+        time = (time - hours) * 60
+        minutes = int(time)
+        time = int((time - minutes) * 60)
+        return "{:d}:{:02d}:{:02d}".format(hours, minutes, time)
 
     def _format_preamble(self):
         return self.PREAMBLE.format(self.name, self.get_walltime_str())
