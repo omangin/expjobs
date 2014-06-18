@@ -20,12 +20,15 @@ def has_qsub():
 
 class TorqueJob(BaseJob):
 
+    """walltime in minutes.
+    """
+
     PREAMBLE = '#!/bin/sh\n\n'\
                '#PBS -N {}\n'\
                '#PBS -l walltime={}\n\n'
     PYTHON = 'python'
 
-    def __init__(self, path, name, script, walltime=1., job_id=None):
+    def __init__(self, path, name, script, walltime=60, job_id=None):
         super(TorqueJob, self).__init__(path, name, script)
         self.walltime = walltime
         # _job_id: (bool, None or int or str)
@@ -77,12 +80,7 @@ class TorqueJob(BaseJob):
             return int(f.read())
 
     def get_walltime_str(self):
-        time = self.walltime
-        hours = int(time)
-        time = (time - hours) * 60
-        minutes = int(time)
-        time = int((time - minutes) * 60)
-        return "{:d}:{:02d}:{:02d}".format(hours, minutes, time)
+        return "{:d}:{:02d}:00".format(self.walltime // 60, self.walltime % 60)
 
     def _format_preamble(self):
         return self.PREAMBLE.format(self.name, self.get_walltime_str())
@@ -148,7 +146,7 @@ class TorqueJob(BaseJob):
 class TorquePool(Pool):
     """Launch each job as a standalone Torque job."""
 
-    def __init__(self, default_walltime=1.):
+    def __init__(self, default_walltime=60):
         super(TorquePool, self).__init__()
         self._walltime = default_walltime
 

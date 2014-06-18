@@ -23,12 +23,12 @@ exit $EXIT_CODE
 class TestTorqueJob(TestCase):
 
     def test_walltime_string(self):
-        job = TorqueJob('/dev/null', 'test', SCRIPT, walltime=3.26)
-        self.assertEqual(job.get_walltime_str(), '3:15:36')
+        job = TorqueJob('/dev/null', 'test', SCRIPT, walltime=195)
+        self.assertEqual(job.get_walltime_str(), '3:15:00')
 
     def test_walltime_string_more_than_one_day(self):
-        job = TorqueJob('/dev/null', 'test', SCRIPT, walltime=33.32)
-        self.assertEqual(job.get_walltime_str(), '1+9:19:12')
+        job = TorqueJob('/dev/null', 'test', SCRIPT, walltime=1999)
+        self.assertEqual(job.get_walltime_str(), '33:19:00')
 
 
 class TestTorquePool(TestCase):
