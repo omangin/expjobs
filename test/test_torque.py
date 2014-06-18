@@ -26,9 +26,9 @@ class TestTorqueJob(TestCase):
         job = TorqueJob('/dev/null', 'test', SCRIPT, walltime=3.26)
         self.assertEqual(job.get_walltime_str(), '3:15:36')
 
-    def test_walltime_string(self):
+    def test_walltime_string_more_than_one_day(self):
         job = TorqueJob('/dev/null', 'test', SCRIPT, walltime=33.32)
-        self.assertEqual(job.get_walltime_str(), '33:19:12')
+        self.assertEqual(job.get_walltime_str(), '1+9:19:12')
 
 
 class TestTorquePool(TestCase):
