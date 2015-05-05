@@ -63,7 +63,7 @@ class Job(BaseJob):
                 with open(self.err, 'w+') as err:
                     self._process = subprocess.call(self._call_args,
                                                     stdout=out, stderr=err)
-        except IOError, e:
+        except IOError as e:
             self._process = e
 
     def wait(self):

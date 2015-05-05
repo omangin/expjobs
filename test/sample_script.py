@@ -16,7 +16,7 @@ class DummyWorker(object):
         self.out_name = name
 
     def run(self):
-        print 'Running {}...'.format(self.param)
+        print('Running {}...'.format(self.param))
         time.sleep(.01)
         out_file = os.path.join(self.out_path, self.out_name + '.result')
         with open(out_file, 'w+') as f:

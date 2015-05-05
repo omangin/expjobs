@@ -115,7 +115,7 @@ class TorqueJob(BaseJob):
             self.job_id = int(out.split('.')[0])
             with open(self.id_file, 'w+') as id_file:
                 id_file.write(out.split('.')[0] + '\n')
-        except subprocess.CalledProcessError, e:
+        except subprocess.CalledProcessError as e:
             self.set_qsub_error(e.returncode)
         except ValueError:  # from int cast
             self.set_qsub_error(out)

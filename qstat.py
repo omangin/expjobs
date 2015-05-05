@@ -29,7 +29,7 @@ def get_status(job_id):
         et = ElementTree.fromstring(xmljob)
         state = et.find('Job').find('job_state').text
         return STATUS[state]
-    except subprocess.CalledProcessError, e:
+    except subprocess.CalledProcessError as e:
         if e.returncode == 153:
             raise UnknownJob(job_id)
         else:

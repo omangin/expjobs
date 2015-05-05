@@ -25,8 +25,8 @@ class ProcessJob(Job):
             out = open(self.out, 'w+')
             err = open(self.err, 'w+')
             self._process = subprocess.Popen(self._call_args, stdout=out,
-                                            stderr=err)
-        except IOError, e:
+                                             stderr=err)
+        except IOError as e:
             self._process = e
 
     def wait(self):
