@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from joblib.job import Job
-from joblib.torque import TorquePool, TorqueJob
+from expjobs.job import Job
+from expjobs.torque import TorqueJob, TorquePool
 
 
 SCRIPT = '/bin/false'

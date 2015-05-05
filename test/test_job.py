@@ -3,8 +3,8 @@ import shutil
 import tempfile
 from unittest import TestCase
 
-from joblib.job import Job
-from joblib import status
+from expjobs.job import Job
+from expjobs import status
 
 
 SCRIPT = os.path.join(os.path.dirname(__file__), 'sample_script.py')

@@ -4,7 +4,7 @@
 import os
 import time
 
-from joblib.helpers import run_class
+from expjobs.helpers import run_class
 
 
 class DummyWorker(object):

@@ -1,5 +1,5 @@
-Joblib
-======
+ExpJobs
+=======
 
 *Basic tools to run groups of jobs in an easy way.*
 
