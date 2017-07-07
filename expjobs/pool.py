@@ -1,3 +1,9 @@
+import time
+import logging
+
+from . import status
+
+
 class Pool(object):
 
     def __init__(self):
@@ -30,3 +36,16 @@ class Pool(object):
     def status_counts(self):
         statuses = self.statuses
         return [(s, statuses.count(s)) for s in set(statuses)]
+
+    def get_stats(self):
+        return "{} ({})".format(
+            self.status, ', '.join(["%s: %s" % x for x in self.status_counts]))
+
+    def log_refreshed_stats(self, log=None, period=1):
+        if log is None:
+            log = logging.warning
+        while self.status < status.FAILED:
+            last_printed = self.get_stats()
+            log(last_printed)
+            time.sleep(period)
+        log(self.get_stats())
