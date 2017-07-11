@@ -84,15 +84,14 @@ class TorqueJob(BaseJob):
 
     def _format_preamble(self):
         return self.PREAMBLE.format(self.name, self.get_walltime_str())
-        #"#PBS -l nodes=%d:ppn=%d\n" % (self.nodes, self.proc_per_node)
 
     def get_PBS(self):
         # Code to launch experiment
         code = self._format_preamble()
         code += "({} {} {} {} {} 1>{} 2>{})\n".format(self.PYTHON, self.script,
-                                                    self.config, self.path,
-                                                    self.name, self.out,
-                                                    self.err)
+                                                      self.config, self.path,
+                                                      self.name, self.out,
+                                                      self.err)
         code += "EXIT_CODE=$?\n"
         code += "echo $EXIT_CODE > {}\n".format(self.get_exit_code_file(
             '$(echo $PBS_JOBID | cut -d"." -f1)'))
@@ -152,4 +151,4 @@ class TorquePool(Pool):
 
     def append(self, job):
         super(TorquePool, self).append(
-                TorqueJob.from_job(job, walltime=self._walltime))
+            TorqueJob.from_job(job, walltime=self._walltime))
