@@ -9,7 +9,7 @@ class Status(tuple):
 
 NOT_READY = Status(0, 'not-ready')
 READY = Status(1, 'ready')
-RUNNING = Status(2, 'running')
-QUEUED = Status(3, 'queued')
+QUEUED = Status(2, 'queued')
+RUNNING = Status(3, 'running')
 FAILED = Status(4, 'failed')
 DONE = Status(5, 'done')
