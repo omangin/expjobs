@@ -1,3 +1,7 @@
+import io
+import os
+from shutil import rmtree
+from tempfile import mkdtemp
 from unittest import TestCase
 
 from expjobs.job import Job
@@ -29,6 +33,16 @@ class TestTorqueJob(TestCase):
     def test_walltime_string_more_than_one_day(self):
         job = TorqueJob('/dev/null', 'test', SCRIPT, walltime=1999)
         self.assertEqual(job.get_walltime_str(), '33:19:00')
+
+    def test_id(self):
+        try:
+            path = mkdtemp()
+            with io.open(os.path.join(path, 'test.pbs.id'), 'w') as f:
+                f.write(u'43\n')
+            job = TorqueJob(path, 'test', SCRIPT, walltime=1999)
+            self.assertEqual(job.job_id, 43)
+        finally:
+            rmtree(path)
 
 
 class TestTorquePool(TestCase):

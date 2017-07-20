@@ -2,6 +2,7 @@
 """
 
 
+import io
 import os
 import stat
 import subprocess
@@ -12,9 +13,12 @@ from .job import BaseJob
 from .pool import Pool
 
 
+QSUB_CMD = 'qsub'
+
+
 def has_qsub():
     with open(os.devnull) as devnull:
-        return subprocess.call(['which', 'qsub'], stdout=devnull,
+        return subprocess.call(['which', QSUB_CMD], stdout=devnull,
                                stderr=devnull) == 0
 
 
@@ -65,9 +69,9 @@ class TorqueJob(BaseJob):
 
     def load_job_id(self):
         try:
-            with open(self.id_file, 'r+') as f:
+            with io.open(self.id_file, 'r') as f:
                 self.job_id = int(f.read())
-        except IOError:
+        except (IOError, ValueError):
             self._job_id = (False, None)  # Means qsub has not been called
 
     def get_exit_code_file(self, job_id=None):
@@ -76,7 +80,7 @@ class TorqueJob(BaseJob):
         return self._file("{}.exitcode".format(job_id))
 
     def get_exit_code(self):
-        with open(self.get_exit_code_file(), 'r+') as f:
+        with io.open(self.get_exit_code_file(), 'r') as f:
             return int(f.read())
 
     def get_walltime_str(self):
@@ -101,7 +105,7 @@ class TorqueJob(BaseJob):
     def write_PBS(self):
         # Write script
         script_file = self.pbs
-        with open(script_file, 'w+') as f:
+        with io.open(script_file, 'w') as f:
             f.write(self.get_PBS())
         # Add execution rights
         os.chmod(script_file, os.stat(script_file).st_mode | stat.S_IEXEC)
@@ -110,9 +114,9 @@ class TorqueJob(BaseJob):
         if self.qsub_success:
             raise ValueError('Job already submitted.')
         try:
-            out = subprocess.check_output(['qsub', self.pbs])
+            out = subprocess.check_output([QSUB_CMD, self.pbs]).decode()
             self.job_id = int(out.split('.')[0])
-            with open(self.id_file, 'w+') as id_file:
+            with io.open(self.id_file, 'w') as id_file:
                 id_file.write(out.split('.')[0] + '\n')
         except subprocess.CalledProcessError as e:
             self.set_qsub_error(e.returncode)

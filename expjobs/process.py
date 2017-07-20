@@ -1,3 +1,4 @@
+import io
 import time
 import subprocess
 from threading import Thread
@@ -22,10 +23,10 @@ class ProcessJob(Job):
 
     def run(self):
         try:
-            out = open(self.out, 'w+')
-            err = open(self.err, 'w+')
-            self._process = subprocess.Popen(self._call_args, stdout=out,
-                                             stderr=err)
+            with io.open(self.out, 'w+') as out:
+                with io.open(self.err, 'w+') as err:
+                    self._process = subprocess.Popen(
+                        self._call_args, stdout=out, stderr=err)
         except IOError as e:
             self._process = e
 
