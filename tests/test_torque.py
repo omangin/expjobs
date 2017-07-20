@@ -51,6 +51,4 @@ class TestTorquePool(TestCase):
 
     def test_job_PBS(self):
         PBS = self.pool.jobs[0].get_PBS()
-        print(PBS)
-        print(OK_PBS)
         self.assertEqual(PBS, OK_PBS)
