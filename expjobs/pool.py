@@ -35,7 +35,7 @@ class Pool(object):
     @property
     def status_counts(self):
         statuses = self.statuses
-        return [(s, statuses.count(s)) for s in set(statuses)]
+        return [(s, statuses.count(s)) for s in sorted(set(statuses))]
 
     def get_stats(self):
         return "{} ({})".format(
